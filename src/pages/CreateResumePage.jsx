@@ -8,6 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiX, FiFileText, FiArrowLeft } from 'react-icons/fi';
 
+// Get the API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const CreateResumePage = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +38,8 @@ const CreateResumePage = () => {
     if (id) {
       const fetchResumeData = async () => {
         try {
-          const res = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}`);
+          // Update to use API_URL environment variable
+          const res = await axios.get(`${API_URL}/api/dashboard/resume/${id}`);
           setResumeData(res.data);
           setResumeTitle(res.data.title);
           setIsLoading(false);

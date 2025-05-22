@@ -5,6 +5,9 @@ import ResumePreview from '../components/resume/ResumePreview';
 import { FiDownload, FiPrinter } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
 
+// Get the API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const ViewResumePage = () => {
   const { shareToken } = useParams();
   const [resume, setResume] = useState(null);
@@ -15,7 +18,7 @@ const ViewResumePage = () => {
   useEffect(() => {
     const fetchResume = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/resume/shared/${shareToken}`);
+        const res = await axios.get(`${API_URL}/api/resume/shared/${shareToken}`);
         setResume(res.data);
         setLoading(false);
       } catch (err) {
@@ -28,13 +31,10 @@ const ViewResumePage = () => {
     fetchResume();
   }, [shareToken]);
 
-  const handlePrint = useReactToPrint({
-    content: () => resumePreviewRef.current,
-  });
-
+  // Update the download handler
   const handleDownload = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/resume/shared/${shareToken}/download`, {
+      const response = await axios.get(`${API_URL}/api/resume/shared/${shareToken}/download`, {
         responseType: 'blob'
       });
       
@@ -50,6 +50,10 @@ const ViewResumePage = () => {
       setError('Failed to download resume');
     }
   };
+
+  const handlePrint = useReactToPrint({
+    content: () => resumePreviewRef.current,
+  });
 
   if (loading) {
     return (

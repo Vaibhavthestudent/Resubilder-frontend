@@ -42,6 +42,7 @@ function App() {
               </PrivateRoute>
             } 
           />
+          
           <Route path="/view-resume/:id" element={<ViewResume />} />
           <Route path="/create-resume" element={<PrivateRoute><CreateResumePage /></PrivateRoute>} />
           <Route path="/view-resume/:shareToken" element={<ViewResumePage />} />

@@ -8,6 +8,8 @@ import jsPDF from 'jspdf';
 import { Link } from 'react-router-dom';
 import ResumePreview from './ResumePreview';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 // Update the props to include resumeTitle and isEditing
 const ResumeForm = ({ initialData, resumeTitle, isEditing }) => {
   const { token } = useAuth();
@@ -242,8 +244,8 @@ const ResumeForm = ({ initialData, resumeTitle, isEditing }) => {
       
       // Call the backend API with enhanced data
       const res = await axios.post(
-        'http://localhost:5000/api/ai/generate-objective', 
-        { 
+        `${API_URL}/api/ai/generate-objective`, 
+        {  
           name, 
           role, 
           skills,
@@ -306,15 +308,15 @@ const ResumeForm = ({ initialData, resumeTitle, isEditing }) => {
       
       let res;
       if (isEditing && initialData?._id) {
-        // Update existing resume
+        // Update existing resume - UPDATED to use API_URL
         res = await axios.put(
-          `http://localhost:5000/api/dashboard/resume/${initialData._id}`, 
+          `${API_URL}/api/dashboard/resume/${initialData._id}`, 
           resumeDataToSave, 
           config
         );
-      } else {
-        // Create new resume
-        res = await axios.post('http://localhost:5000/api/dashboard/resume', resumeDataToSave, config);
+    } else {
+        // Create new resume - UPDATED to use API_URL
+        res = await axios.post(`${API_URL}/api/dashboard/resume`, resumeDataToSave, config);
       }
       
       setLoading(false);

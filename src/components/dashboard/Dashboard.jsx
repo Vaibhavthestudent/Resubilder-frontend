@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { FiPlus, FiEdit2, FiTrash2, FiDownload, FiShare2, FiUser, FiLogOut, FiFileText } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiDownload, FiShare2, FiUser, FiLogOut, FiFileText, FiEye } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { saveAs } from 'file-saver';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// Get the API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Dashboard = () => {
   const [resumes, setResumes] = useState([]);
@@ -25,7 +28,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchResumes = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/dashboard');
+        const res = await axios.get(`${API_URL}/api/dashboard`);
         setResumes(res.data.resumes);
         setLoading(false);
       } catch (err) {
@@ -49,7 +52,7 @@ const Dashboard = () => {
   const handleDeleteResume = async (id) => {
     if (window.confirm('Are you sure you want to delete this resume?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/dashboard/resume/${id}`);
+        await axios.delete(`${API_URL}/api/dashboard/resume/${id}`);
         setResumes(resumes.filter(resume => resume._id !== id));
         toast.success('Resume deleted successfully');
       } catch (err) {
@@ -63,7 +66,7 @@ const Dashboard = () => {
   const handleDownloadResume = async (id, title) => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/download`, {
+      const response = await axios.get(`${API_URL}/api/dashboard/resume/${id}/download`, {
         responseType: 'blob'
       });
       
@@ -82,19 +85,13 @@ const Dashboard = () => {
   };
 
   const handleShareResume = async (id) => {
-    setCurrentResumeId(id);
-    setShareLoading(true);
-    
-    try {
-      const response = await axios.post(`http://localhost:5000/api/dashboard/resume/${id}/share`);
-      setShareLink(response.data.shareLink);
-      setShareModalOpen(true);
-      setShareLoading(false);
-    } catch (err) {
-      console.error('Error sharing resume:', err);
-      toast.error('Failed to generate share link');
-      setShareLoading(false);
-    }
+    // Show "Coming soon" toast instead of opening share modal
+    toast.info('Resume sharing coming soon!');
+  };
+
+  // Add a new function to handle preview
+  const handlePreviewResume = (id) => {
+    navigate(`/view-resume/${id}`);
   };
 
   const copyShareLink = () => {
@@ -321,15 +318,13 @@ const Dashboard = () => {
                       <FiEdit2 className="mr-1" /> Edit
                     </Link>
                     <button
-                      onClick={() => handleDownloadResume(resume._id, resume.title)}
-                      disabled={loading}
+                      onClick={() => handlePreviewResume(resume._id)}
                       className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full text-sm font-medium transition-colors"
                     >
-                      <FiDownload className="mr-1" /> Download
+                      <FiEye className="mr-1" /> Preview
                     </button>
                     <button 
                       onClick={() => handleShareResume(resume._id)}
-                      disabled={shareLoading}
                       className="inline-flex items-center px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-full text-sm font-medium transition-colors"
                     >
                       <FiShare2 className="mr-1" /> Share
