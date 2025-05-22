@@ -39,3 +39,62 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Add these responsive styles for resume templates */
+.resume-preview-container {
+  width: 100%;
+  max-width: 8.5in;
+  margin: 0 auto;
+  /* Add aspect ratio preservation */
+  aspect-ratio: 8.5 / 11;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .resume-preview-container {
+    width: 100%;
+    max-width: none;
+    transform: none !important;
+    /* Ensure proper dimensions for print */
+    height: 11in;
+    width: 8.5in;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+}
+
+/* Ensure template content is properly sized */
+@media (max-width: 768px) {
+  .resume-preview-container {
+    overflow: visible;
+    /* Maintain aspect ratio on mobile */
+    aspect-ratio: 8.5 / 11;
+    transform-origin: top center;
+  }
+  
+  /* Fix for PDF generation on mobile */
+  @supports (-webkit-touch-callout: none) {
+    .resume-preview-container {
+      /* iOS-specific fixes */
+      height: auto;
+      min-height: calc(100vw * (11/8.5));
+      max-height: none;
+    }
+  }
+}
+
+/* Add specific styles for download preparation */
+.resume-for-download {
+  width: 8.5in;
+  height: 11in;
+  overflow: hidden;
+  background: white;
+  margin: 0;
+  padding: 0;
+}

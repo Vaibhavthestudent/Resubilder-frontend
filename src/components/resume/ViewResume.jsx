@@ -68,13 +68,13 @@ const ViewResume = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-8 bg-white rounded-xl shadow-lg">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">{error}</h2>
-          <p className="text-gray-600 mb-6">The resume you're looking for could not be found or you don't have permission to view it.</p>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg">
+          <h2 className="text-xl md:text-2xl font-bold text-red-600 mb-4">{error}</h2>
+          <p className="text-gray-600 mb-6 text-sm md:text-base">The resume you're looking for could not be found or you don't have permission to view it.</p>
           <Link 
             to="/dashboard" 
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base"
           >
             <FiArrowLeft className="mr-2" /> Back to Dashboard
           </Link>
@@ -84,34 +84,59 @@ const ViewResume = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 py-4 md:py-8 px-2 md:px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Navigation and action buttons */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 md:mb-6 gap-3">
           <Link 
             to="/dashboard" 
-            className="inline-flex items-center px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors shadow"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 md:px-4 md:py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors shadow text-sm md:text-base"
           >
             <FiArrowLeft className="mr-2" /> Back to Dashboard
           </Link>
           
-          <div className="flex space-x-3">
+          <div className="flex w-full sm:w-auto space-x-2 md:space-x-3">
             <button
               onClick={handlePrint}
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 md:px-4 md:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow text-sm md:text-base"
             >
               <FiPrinter className="mr-2" /> Print
             </button>
           </div>
         </div>
         
+        {/* Resume preview container with responsive scaling */}
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           {resume && (
             <div className="flex justify-center">
-              <ResumePreview resumeData={resume} ref={resumePreviewRef} />
+              <div className="w-full overflow-auto scale-container">
+                <div className="transform-origin-top-center" style={{ transform: 'scale(var(--resume-scale, 1))', transformOrigin: 'top center' }}>
+                  <ResumePreview resumeData={resume} ref={resumePreviewRef} />
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Add responsive scaling CSS */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .scale-container {
+            --resume-scale: 0.8;
+          }
+        }
+        @media (max-width: 640px) {
+          .scale-container {
+            --resume-scale: 0.7;
+          }
+        }
+        @media (max-width: 480px) {
+          .scale-container {
+            --resume-scale: 0.6;
+          }
+        }
+      `}</style>
     </div>
   );
 };

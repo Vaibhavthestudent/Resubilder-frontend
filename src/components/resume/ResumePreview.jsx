@@ -6,15 +6,22 @@ import MinimalTemplate from './templates/MinimalTemplate';
 const ResumePreview = forwardRef(({ resumeData }, ref) => {
   const { template } = resumeData;
 
-  switch (template) {
-    case 'creative':
-      return <CreativeTemplate resumeData={resumeData} ref={ref} />;
-    case 'minimal':
-      return <MinimalTemplate resumeData={resumeData} ref={ref} />;
-    case 'professional':
-    default:
-      return <ProfessionalTemplate resumeData={resumeData} ref={ref} />;
-  }
+  // Add a wrapper div with responsive classes
+  return (
+    <div className="resume-preview-container">
+      {(() => {
+        switch (template) {
+          case 'creative':
+            return <CreativeTemplate resumeData={resumeData} ref={ref} />;
+          case 'minimal':
+            return <MinimalTemplate resumeData={resumeData} ref={ref} />;
+          case 'professional':
+          default:
+            return <ProfessionalTemplate resumeData={resumeData} ref={ref} />;
+        }
+      })()}
+    </div>
+  );
 });
 
 export default ResumePreview;

@@ -4,6 +4,8 @@ import axios from 'axios';
 import ResumePreview from '../components/resume/ResumePreview';
 import { FiDownload, FiPrinter } from 'react-icons/fi';
 import { useReactToPrint } from 'react-to-print';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 // Get the API URL from environment variables
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -34,20 +36,47 @@ const ViewResumePage = () => {
   // Update the download handler
   const handleDownload = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/resume/shared/${shareToken}/download`, {
-        responseType: 'blob'
+      setLoading(true);
+      
+      // Get the resume element
+      const resumeElement = resumePreviewRef.current;
+      
+      // Set fixed dimensions for letter size paper (8.5" x 11")
+      const pdfWidth = 8.5;
+      const pdfHeight = 11;
+      
+      // Create a new jsPDF instance with letter size dimensions
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'in',
+        format: [pdfWidth, pdfHeight]
       });
       
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${resume.title.replace(/\s+/g, '_')}_resume.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      // Use html2canvas with fixed dimensions and higher quality
+      const canvas = await html2canvas(resumeElement, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+        allowTaint: true,
+        width: resumeElement.offsetWidth,
+        height: resumeElement.offsetHeight
+      });
+      
+      // Calculate the aspect ratio to maintain proportions
+      const imgWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add the image to the PDF with proper scaling
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight > pdfHeight ? pdfHeight : imgHeight);
+      
+      // Save the PDF
+      pdf.save(`${resume.title.replace(/\s+/g, '_')}_resume.pdf`);
+      
+      setLoading(false);
     } catch (err) {
       console.error('Error downloading resume:', err);
       setError('Failed to download resume');
+      setLoading(false);
     }
   };
 
